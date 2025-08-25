@@ -1,7 +1,7 @@
 # Frontend Prototype Implementation Plan
 
 **Last Updated:** 2025-08-25  
-**Status:** Core UI Components Complete, Key Flows Next
+**Status:** Phase 4 Key Flows In Progress (Session 004)
 
 ## Current Progress
 - ✅ **Phase 1:** Setup & Data Architecture (COMPLETE)
@@ -99,7 +99,7 @@ This document outlines the implementation plan for the Nile Labs frontend protot
    - Filter and sort types defined
 
 2. **Create Mock Data** ✅
-   - 8 realistic experiments with varied statuses
+   - 30 realistic experiments with varied statuses (expanded in Session 003)
    - All categories from PRD-001 v1.3
    - Progress updates with timelines
    - Fork relationships established
@@ -139,9 +139,9 @@ This document outlines the implementation plan for the Nile Labs frontend protot
    - Grouped by time period
    - Load more functionality
 
-### Phase 4: Key Flows (Day 3-4) 🚧 IN PROGRESS
+### Phase 4: Key Flows (Day 3-4) 🚧 IN PROGRESS (Session 004)
 
-1. **5-Second Creation** ✅
+1. **5-Second Creation** ✅ (Session 003)
    - Title + description only form
    - Keyboard-first flow (Enter key navigation)
    - Auto-focus management
@@ -149,11 +149,12 @@ This document outlines the implementation plan for the Nile Labs frontend protot
    - Success animation
    - Redirect to experiment page
 
-2. **Browse & Filter**
+2. **Browse & Filter** 🚧 (Session 004 - In Progress)
    - Grid view of all experiments
    - Filter by status, category, owner
-   - Search by keyword
+   - Search by keyword (with tag normalization)
    - Sort options (newest, most forked, recently updated)
+   - 200ms debounce on search
 
 3. **Single Experiment View**
    - Full details display
@@ -357,6 +358,6 @@ useEffect(() => {
 
 ---
 
-*Last Updated: 2024-08-25*
+*Last Updated: 2025-08-25*
 *Phase: Frontend Prototype*
 *Status: Ready to Begin Implementation*
