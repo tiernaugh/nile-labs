@@ -1,13 +1,13 @@
 # Frontend Prototype Implementation Plan
 
-**Last Updated:** 2024-08-25  
-**Status:** Data Layer Complete, UI Components Next
+**Last Updated:** 2025-08-25  
+**Status:** Core UI Components Complete, Key Flows Next
 
 ## Current Progress
 - ✅ **Phase 1:** Setup & Data Architecture (COMPLETE)
 - ✅ **Phase 2:** Mock Data & Types (COMPLETE)
-- 🚧 **Phase 3:** Core Components (IN PROGRESS)
-- ⏳ **Phase 4:** Key Flows (PENDING)
+- ✅ **Phase 3:** Core Components (COMPLETE)
+- 🚧 **Phase 4:** Key Flows (IN PROGRESS)
 - ⏳ **Phase 5:** Polish & Interactions (PENDING)
 
 ## Overview
@@ -111,38 +111,42 @@ This document outlines the implementation plan for the Nile Labs frontend protot
    - No actual auth logic
    - Switch between users for testing
 
-### Phase 3: Core Components (Day 2-3)
+### Phase 3: Core Components (Day 2-3) ✅ COMPLETE
 
-1. **Layout & Navigation**
+1. **Layout & Navigation** ✅
    - Top nav with logo and user menu
-   - Responsive mobile menu
-   - Footer with quick links
+   - Responsive layout
+   - Navigation links
 
-2. **Experiment Card**
+2. **Experiment Card** ✅
    - Visual states for all statuses
-   - Color block cover images
-   - Owner/collaborator avatars
-   - Progress indicator
-   - Fork count badge
+   - Color block cover images with initials
+   - Owner info with time ago
+   - Fork/collaborator/progress counts
    - Hover interactions
+   - Status badges with semantic colors
 
-3. **Activity Feed**
-   - Real-time feel (mock 8-second updates)
-   - Mixed activity types:
+3. **Activity Feed** ✅
+   - Real-time feel (8-second polling)
+   - All 5 activity types implemented:
      - New experiments
      - Status changes
      - Progress updates
      - New collaborators
      - Forks created
-   - Timestamp formatting
+   - Time ago formatting
+   - Pulse indicator (24h activity count)
+   - Grouped by time period
    - Load more functionality
 
-### Phase 4: Key Flows (Day 3-4)
+### Phase 4: Key Flows (Day 3-4) 🚧 IN PROGRESS
 
-1. **5-Second Creation**
-   - Single form: title + description
-   - Optional: category, tags, cover color
-   - Instant feedback
+1. **5-Second Creation** ✅
+   - Title + description only form
+   - Keyboard-first flow (Enter key navigation)
+   - Auto-focus management
+   - Deterministic cover color from title
+   - Success animation
    - Redirect to experiment page
 
 2. **Browse & Filter**
@@ -279,12 +283,12 @@ useEffect(() => {
 ## Testing Checklist
 
 ### User Flows to Validate
-- [ ] Can create experiment in <5 seconds
-- [ ] Activity feed feels alive and engaging
+- [x] Can create experiment in <5 seconds ✅
+- [x] Activity feed feels alive and engaging ✅
 - [ ] Browse/filter is intuitive
 - [ ] Fork relationship is clear
 - [ ] Progress timeline makes sense
-- [ ] Mobile experience is smooth
+- [x] Mobile experience is smooth ✅
 
 ### Stakeholder Questions
 - [ ] Does this capture the experimental spirit?
