@@ -1,53 +1,104 @@
-import Link from "next/link";
-
-import { LatestPost } from "~/app/_components/post";
+import { ActivityFeed } from "~/components/activity/ActivityFeed";
+import { QuickCreateForm } from "~/components/experiments/QuickCreateForm";
+import { ExperimentCard } from "~/components/experiments/ExperimentCard";
 import { HydrateClient, api } from "~/trpc/server";
+import { ExperimentStatus } from "~/lib/types";
+import { Sparkles, Beaker } from "lucide-react";
 
 export default async function Home() {
-	const hello = await api.post.hello({ text: "from tRPC" });
+  // Prefetch data for the activity feed
+  void api.experiments.getGroupedActivities.prefetch();
+  void api.experiments.getActivityPulse.prefetch();
+  
+  // Get active experiments for the homepage
+  const activeExperiments = await api.experiments.listExperiments({
+    status: [ExperimentStatus.Active],
+    sortBy: "updatedAt",
+    sortOrder: "desc",
+  });
 
-	void api.post.getLatest.prefetch();
+  return (
+    <HydrateClient>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center gap-2">
+                <Beaker className="h-6 w-6 text-purple-600" />
+                <span className="text-xl font-bold text-gray-900">Nile Labs</span>
+              </div>
+              <nav className="flex items-center gap-6">
+                <a href="/experiments" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+                  All Experiments
+                </a>
+                <a href="/about" className="text-sm font-medium text-gray-700 hover:text-gray-900">
+                  About
+                </a>
+              </nav>
+            </div>
+          </div>
+        </header>
 
-	return (
-		<HydrateClient>
-			<main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-				<div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-					<h1 className="font-extrabold text-5xl tracking-tight sm:text-[5rem]">
-						Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-					</h1>
-					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-						<Link
-							className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-							href="https://create.t3.gg/en/usage/first-steps"
-							target="_blank"
-						>
-							<h3 className="font-bold text-2xl">First Steps →</h3>
-							<div className="text-lg">
-								Just the basics - Everything you need to know to set up your
-								database and authentication.
-							</div>
-						</Link>
-						<Link
-							className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-							href="https://create.t3.gg/en/introduction"
-							target="_blank"
-						>
-							<h3 className="font-bold text-2xl">Documentation →</h3>
-							<div className="text-lg">
-								Learn more about Create T3 App, the libraries it uses, and how
-								to deploy it.
-							</div>
-						</Link>
-					</div>
-					<div className="flex flex-col items-center gap-2">
-						<p className="text-2xl text-white">
-							{hello ? hello.greeting : "Loading tRPC query..."}
-						</p>
-					</div>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Activity Feed */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Quick Create */}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-500" />
+                  Start an Experiment
+                </h2>
+                <QuickCreateForm />
+              </div>
 
-					<LatestPost />
-				</div>
-			</main>
-		</HydrateClient>
-	);
+              {/* Active Experiments Grid */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Active Experiments
+                  </h2>
+                  <a 
+                    href="/experiments" 
+                    className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+                  >
+                    View all →
+                  </a>
+                </div>
+                
+                {activeExperiments && activeExperiments.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {activeExperiments.slice(0, 4).map((experiment) => (
+                      <ExperimentCard key={experiment.id} experiment={experiment} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+                    <Beaker className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <p className="text-gray-500">No active experiments yet</p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      Create your first experiment above
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column - Activity Feed */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  Activity Feed
+                </h2>
+                <div className="bg-white rounded-lg border border-gray-200 p-4">
+                  <ActivityFeed />
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </HydrateClient>
+  );
 }

@@ -94,7 +94,14 @@ export async function listExperiments(
           comparison = a.title.localeCompare(b.title);
           break;
         case ExperimentSortBy.Status:
-          comparison = a.status.localeCompare(b.status);
+          // Semantic status ordering: Idea < Active < Findings < In Production
+          const statusOrder = {
+            [ExperimentStatus.Idea]: 0,
+            [ExperimentStatus.Active]: 1,
+            [ExperimentStatus.Findings]: 2,
+            [ExperimentStatus.InProduction]: 3,
+          };
+          comparison = statusOrder[a.status] - statusOrder[b.status];
           break;
         case ExperimentSortBy.MostForked:
           // Count forks for each experiment
@@ -108,11 +115,14 @@ export async function listExperiments(
     });
   }
 
-  // Add owner and collaborator details
+  // Add owner, collaborator, and forkedFrom details
   return result.map((exp) => ({
     ...exp,
     owner: mockUsers.find((u) => u.id === exp.ownerId),
     collaborators: mockUsers.filter((u) => exp.collaboratorIds.includes(u.id)),
+    forkedFrom: exp.forkedFromId 
+      ? experiments.find((e) => e.id === exp.forkedFromId)
+      : undefined,
   }));
 }
 
@@ -143,13 +153,18 @@ export async function createExperiment(
 ): Promise<Experiment> {
   await delay(500);
 
+  // Normalize tags: lowercase, trim, remove duplicates
+  const normalizedTags = input.tags 
+    ? [...new Set(input.tags.map(tag => tag.toLowerCase().trim()).filter(Boolean))]
+    : [];
+
   const newExperiment: Experiment = {
     id: generateId("exp"),
     title: input.title,
     description: input.description,
     status: input.status || ExperimentStatus.Idea,
     category: input.category,
-    tags: input.tags || [],
+    tags: normalizedTags,
     links: input.links?.map((link) => ({
       ...link,
       id: generateId("link"),
@@ -187,9 +202,18 @@ export async function updateExperiment(
   if (index === -1) return null;
 
   const oldExperiment = experiments[index];
+  
+  // Normalize tags if provided
+  const normalizedInput = {
+    ...input,
+    tags: input.tags 
+      ? [...new Set(input.tags.map(tag => tag.toLowerCase().trim()).filter(Boolean))]
+      : undefined,
+  };
+  
   const updatedExperiment = {
     ...oldExperiment,
-    ...input,
+    ...normalizedInput,
     updatedAt: new Date(),
   };
 

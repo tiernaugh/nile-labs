@@ -1,18 +1,13 @@
-import { useEffect, useRef } from "react";
 import { api } from "~/trpc/react";
 
 const POLL_INTERVAL = 8000; // 8 seconds per ADR-004
-const POLL_INTERVAL_BACKGROUND = 30000; // 30 seconds when tab not active
 
 export function useActivityFeed() {
-  const isTabVisible = useRef(true);
-  const lastFocusTime = useRef(Date.now());
-
   // Get grouped activities with polling
   const activitiesQuery = api.experiments.getGroupedActivities.useQuery(
     undefined,
     {
-      refetchInterval: isTabVisible.current ? POLL_INTERVAL : POLL_INTERVAL_BACKGROUND,
+      refetchInterval: POLL_INTERVAL,
       refetchIntervalInBackground: false, // Pause when tab not visible
       refetchOnWindowFocus: true, // Immediate refresh on focus
       refetchOnReconnect: true,
@@ -31,49 +26,6 @@ export function useActivityFeed() {
       staleTime: 5000,
     }
   );
-
-  // Handle visibility change
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      isTabVisible.current = !document.hidden;
-      
-      if (!document.hidden) {
-        // Tab became visible - check if we should refetch
-        const timeSinceLastFocus = Date.now() - lastFocusTime.current;
-        if (timeSinceLastFocus > POLL_INTERVAL) {
-          activitiesQuery.refetch();
-          pulseQuery.refetch();
-        }
-        lastFocusTime.current = Date.now();
-      }
-    };
-
-    const handleFocus = () => {
-      // Window received focus
-      isTabVisible.current = true;
-      const timeSinceLastFocus = Date.now() - lastFocusTime.current;
-      if (timeSinceLastFocus > POLL_INTERVAL) {
-        activitiesQuery.refetch();
-        pulseQuery.refetch();
-      }
-      lastFocusTime.current = Date.now();
-    };
-
-    const handleBlur = () => {
-      // Window lost focus
-      isTabVisible.current = false;
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("focus", handleFocus);
-    window.addEventListener("blur", handleBlur);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleFocus);
-      window.removeEventListener("blur", handleBlur);
-    };
-  }, [activitiesQuery, pulseQuery]);
 
   return {
     activities: activitiesQuery.data,
