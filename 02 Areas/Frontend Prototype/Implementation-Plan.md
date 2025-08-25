@@ -1,5 +1,15 @@
 # Frontend Prototype Implementation Plan
 
+**Last Updated:** 2024-08-25  
+**Status:** Data Layer Complete, UI Components Next
+
+## Current Progress
+- ✅ **Phase 1:** Setup & Data Architecture (COMPLETE)
+- ✅ **Phase 2:** Mock Data & Types (COMPLETE)
+- 🚧 **Phase 3:** Core Components (IN PROGRESS)
+- ⏳ **Phase 4:** Key Flows (PENDING)
+- ⏳ **Phase 5:** Polish & Interactions (PENDING)
+
 ## Overview
 This document outlines the implementation plan for the Nile Labs frontend prototype (Phase 1), following ADR-003's frontend-first approach. We'll build a complete UI with mock data before any backend integration.
 
@@ -11,44 +21,46 @@ This document outlines the implementation plan for the Nile Labs frontend protot
 
 ## Technical Approach
 
-### Current State
+### Current State (UPDATED)
 - T3 app scaffolded with tRPC, Prisma, Tailwind, Biome
-- Need to strip out backend dependencies for prototype phase
-- Focus on React state and mock data
+- **Decision:** Keep tRPC/React Query infrastructure for mock data
+- Data abstraction layer complete in `/lib/data/`
+- Custom hooks ready with proper polling behavior
 
-### Tech Stack for Prototype
+### Tech Stack for Prototype (UPDATED)
 - **Next.js 15** - App Router for pages
 - **TypeScript** - Type safety for mock data
 - **Tailwind CSS** - Rapid styling
+- **tRPC + React Query** - Data fetching with polling
 - **Lucide React** - Icons
 - **CVA** - Component variants
-- **Local State** - useState/useContext for data
+- **Mock Data Layer** - Abstraction for easy Phase 2 swap
 
 ## Implementation Phases
 
-### Phase 1: Setup & Cleanup (Day 1)
-1. **Remove T3 Boilerplate**
-   - Remove tRPC setup and dependencies
-   - Clean up default pages
-   - Keep Prisma schema as reference only
-   - Remove server components where not needed
+### Phase 1: Setup & Cleanup (Day 1) ✅ COMPLETE
+1. **Keep tRPC Infrastructure** 
+   - ✅ Repurposed tRPC routers for mock data
+   - ✅ React Query provides polling behavior
+   - ✅ Kept Prisma schema as reference
+   - Clean up default pages (pending)
 
-2. **Install UI Dependencies**
+2. **Install UI Dependencies** (pending)
    ```bash
    pnpm add lucide-react clsx tailwind-merge class-variance-authority
    ```
 
-3. **Project Structure**
+3. **Project Structure** (data layer complete, UI pending)
    ```
    src/
-   ├── app/
-   │   ├── layout.tsx (main layout)
-   │   ├── page.tsx (activity feed)
+   ├── app/                          # Pages (pending)
+   │   ├── layout.tsx 
+   │   ├── page.tsx 
    │   ├── experiments/
-   │   │   ├── page.tsx (browse all)
-   │   │   └── [id]/page.tsx (single view)
-   │   └── create/page.tsx (new experiment)
-   ├── components/
+   │   │   ├── page.tsx 
+   │   │   └── [id]/page.tsx 
+   │   └── create/page.tsx 
+   ├── components/                   # UI Components (pending)
    │   ├── experiments/
    │   │   ├── ExperimentCard.tsx
    │   │   ├── ExperimentForm.tsx
@@ -60,45 +72,39 @@ This document outlines the implementation plan for the Nile Labs frontend protot
    │       ├── Button.tsx
    │       ├── Card.tsx
    │       └── Badge.tsx
-   ├── lib/
-   │   ├── mock-data.ts
-   │   └── types.ts
+   ├── lib/                          # ✅ COMPLETE
+   │   ├── types.ts                  # ✅ Full type definitions
+   │   ├── data/                     # ✅ Data abstraction layer
+   │   │   ├── mock-data.ts          # ✅ Mock data with 8 experiments
+   │   │   ├── experiments.ts        # ✅ All CRUD operations
+   │   │   └── activities.ts         # ✅ Activity feed operations
+   │   └── hooks/                    # ✅ Custom React hooks
+   │       ├── useActivityFeed.ts    # ✅ Polling behavior
+   │       └── useExperiments.ts     # ✅ Experiment operations
+   ├── server/                       # ✅ COMPLETE
+   │   └── api/
+   │       └── routers/
+   │           └── experiments.ts    # ✅ tRPC mock resolvers
    └── contexts/
-       └── MockAuthContext.tsx
+       └── MockAuthContext.tsx       # (pending)
    ```
 
-### Phase 2: Mock Data & Types (Day 1-2)
+### Phase 2: Mock Data & Types (Day 1-2) ✅ COMPLETE
 
-1. **Define TypeScript Types**
-   ```typescript
-   // Based on PRD-001 data model
-   interface Experiment {
-     id: string;
-     title: string;
-     description: string;
-     status: 'Idea' | 'Active' | 'Findings' | 'In Production';
-     category?: Category;
-     coverImageUrl?: string;
-     ownerId: string;
-     owner: User;
-     collaboratorIds: string[];
-     collaborators: User[];
-     forkedFromId?: string;
-     forkedFrom?: Experiment;
-     links?: Link[];
-     tags?: string[];
-     createdAt: Date;
-     updatedAt: Date;
-     progressUpdates: ProgressUpdate[];
-   }
-   ```
+1. **Define TypeScript Types** ✅
+   - Complete type definitions in `/lib/types.ts`
+   - All PRD-001 data models implemented
+   - Added ActivityEvent types (5 types)
+   - Included soft delete capability (`deletedAt`)
+   - Filter and sort types defined
 
-2. **Create Mock Data**
-   - 15-20 sample experiments
-   - Various statuses and categories
-   - Realistic progress timelines
-   - Fork relationships
-   - Recent activity items
+2. **Create Mock Data** ✅
+   - 8 realistic experiments with varied statuses
+   - All categories from PRD-001 v1.3
+   - Progress updates with timelines
+   - Fork relationships established
+   - Activity events for last 24 hours
+   - Deterministic color generation helper
 
 3. **Mock Authentication Context**
    - Simple user object
